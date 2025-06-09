@@ -283,10 +283,15 @@ export const removeDataSources = async () => {
   );
 
   for (const item of dataSources?.data?.datasources) {
-    await Storyblok.delete(
-      `/spaces/${STORYBLOK_SPACE_ID}/datasources/${item.id}`,
-      {},
-    );
+    try {
+      await Storyblok.delete(
+        `/spaces/${STORYBLOK_SPACE_ID}/datasources/${item.id}`,
+        {},
+      );
+    } catch (error) {
+      // Continue with other deletions even if one fails (e.g., 404 not found)
+      console.warn(`Failed to delete datasource ${item.id}:`, error);
+    }
   }
 
   return { ok: "ok" };
@@ -343,10 +348,15 @@ export const removeComponents = async () => {
   for (const item of components?.data?.components) {
     // cant remove page component
     if (item?.name !== "page") {
-      await Storyblok.delete(
-        `/spaces/${STORYBLOK_SPACE_ID}/components/${item.id}`,
-        {},
-      );
+      try {
+        await Storyblok.delete(
+          `/spaces/${STORYBLOK_SPACE_ID}/components/${item.id}`,
+          {},
+        );
+      } catch (error) {
+        // Continue with other deletions even if one fails (e.g., 404 not found)
+        console.warn(`Failed to delete component ${item.id}:`, error);
+      }
     }
   }
 
@@ -549,23 +559,31 @@ export const removeStories = async () => {
   );
   const folders = stories?.data?.stories.filter((item: any) => item.is_folder);
   const st = stories?.data?.stories.filter((item: any) => !item.is_folder);
+  
   for (const item of st) {
-    await Storyblok.delete(
-      `/spaces/${STORYBLOK_SPACE_ID}/stories/${item.id}`,
-      {},
-    );
+    try {
+      await Storyblok.delete(
+        `/spaces/${STORYBLOK_SPACE_ID}/stories/${item.id}`,
+        {},
+      );
+    } catch (error) {
+      // Continue with other deletions even if one fails (e.g., 404 not found)
+      console.warn(`Failed to delete story ${item.id}:`, error);
+    }
   }
 
   // remove folders
-
   for (const item of folders) {
-    await Storyblok.delete(
-      `/spaces/${STORYBLOK_SPACE_ID}/stories/${item.id}`,
-      {},
-    );
+    try {
+      await Storyblok.delete(
+        `/spaces/${STORYBLOK_SPACE_ID}/stories/${item.id}`,
+        {},
+      );
+    } catch (error) {
+      // Continue with other deletions even if one fails (e.g., 404 not found)
+      console.warn(`Failed to delete folder ${item.id}:`, error);
+    }
   }
 
   return { ok: "ok" };
 };
-
-
